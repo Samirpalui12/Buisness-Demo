@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Demo Generator</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+body{background:#0f0f0f;color:#fff;padding:25px 15px;min-height:100vh;line-height:1.5}
+.wrap{max-width:950px;margin:0 auto}
+.header{text-align:center;margin-bottom:25px}
+h1{color:#D4AF37;margin-bottom:8px;font-size:1.7rem}
+.sub{color:#888;font-size:.88rem}
+.card{background:#1a1a1a;padding:22px;border-radius:12px;border:1px solid rgba(212,175,55,.2);margin-bottom:18px}
+h3{color:#D4AF37;margin-bottom:15px;font-size:1.05rem;border-bottom:1px solid rgba(212,175,55,.2);padding-bottom:10px;display:flex;align-items:center;gap:8px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+label{display:block;font-size:.82rem;color:#bbb;margin-bottom:5px;margin-top:12px}
+label:first-child{margin-top:0}
+input,textarea,select{width:100%;padding:11px 14px;background:#0f0f0f;color:#fff;border:1px solid #333;border-radius:8px;font-family:inherit;font-size:.92rem;outline:none;transition:border .2s}
+input:focus,textarea:focus,select:focus{border-color:#D4AF37}
+textarea{resize:vertical;min-height:150px;font-family:'Courier New',monospace;font-size:.82rem;line-height:1.7}
+.btn{padding:13px 25px;background:#D4AF37;color:#000;border:none;border-radius:8px;font-weight:700;font-size:.95rem;cursor:pointer;transition:all .3s;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn:hover{background:#b8952b;transform:translateY(-2px)}
+.btn-sec{background:#2A5C82;color:#fff}
+.btn-green{background:#4CAF50;color:#fff}
+.btn-red{background:#c62828;color:#fff}
+.output{background:#0a0a0a;padding:22px;border-radius:12px;border:2px solid #4CAF50;margin-top:20px;display:none}
+.output h3{color:#4CAF50}
+.link-box{background:#000;padding:15px;border-radius:8px;margin:15px 0;font-size:.72rem;max-height:150px;overflow:auto;word-break:break-all;border:1px solid #333}
+.link-box a{color:#D4AF37;text-decoration:none}
+.help{background:rgba(42,92,130,.15);padding:14px;border-left:3px solid #2A5C82;border-radius:6px;font-size:.82rem;color:#ccc;margin-top:12px;line-height:1.8}
+.help code{background:#000;padding:2px 6px;border-radius:3px;color:#D4AF37;font-family:monospace;font-size:.78rem}
+.help strong{color:#D4AF37}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}
+.actions .btn{flex:1;min-width:130px}
+.stat{color:#888;font-size:.8rem;margin-top:10px;text-align:center}
+.stat strong{color:#D4AF37}
+.badge{display:inline-block;padding:3px 10px;background:rgba(212,175,55,.15);color:#D4AF37;border-radius:20px;font-size:.7rem;margin-left:8px}
+.alert{padding:12px 16px;border-radius:8px;margin-bottom:15px;font-size:.85rem;display:none}
+.alert.err{background:rgba(198,40,40,.2);border-left:3px solid #c62828;color:#ff9999;display:block}
+.alert.ok{background:rgba(76,175,80,.2);border-left:3px solid #4CAF50;color:#9dff9d;display:block}
+.url-info{background:rgba(212,175,55,.1);padding:12px 16px;border-radius:8px;font-size:.75rem;color:#D4AF37;margin-bottom:15px;word-break:break-all;line-height:1.7}
+.url-info code{background:#000;padding:2px 6px;border-radius:3px;font-family:monospace;color:#fff;font-size:.72rem;display:inline-block;margin-top:3px}
+.verify-box{background:#111;padding:12px 15px;border-radius:6px;margin-top:12px;font-family:monospace;font-size:.75rem;color:#7fff7f;border:1px solid #333;display:none;line-height:1.8}
+.type-selector{display:grid;grid-template-columns:repeat(auto-fill,minmax(115px,1fr));gap:10px;margin-top:15px}
+.type-btn{padding:15px 10px;background:#0f0f0f;color:#fff;border:2px solid #333;border-radius:10px;cursor:pointer;transition:all .3s;font-family:inherit;text-align:center;font-size:.78rem}
+.type-btn i{display:block;font-size:1.4rem;margin-bottom:6px;color:#D4AF37}
+.type-btn:hover{border-color:#D4AF37;transform:translateY(-3px)}
+.type-btn.active{background:#D4AF37;color:#000;border-color:#D4AF37}
+.type-btn.active i{color:#000}
+@media(max-width:600px){.grid2,.grid3{grid-template-columns:1fr}body{padding:15px 10px}h1{font-size:1.3rem}.actions .btn{min-width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <h1>🎯 Universal Business Demo Generator</h1>
+    <p class="sub">যেকোনো ব্যবসার ডেমো বানান ২ মিনিটে!</p>
+  </div>
+
+  <div class="url-info">
+    <i class="fas fa-link"></i> <strong>Target URL:</strong><br>
+    <code id="baseUrlDisplay">detecting...</code>
+  </div>
+
+  <div id="alert" class="alert"></div>
+
+  <!-- BUSINESS TYPE -->
+  <div class="card">
+    <h3><i class="fas fa-building"></i> ১. ব্যবসার ধরন সিলেক্ট করুন</h3>
+    <div class="type-selector" id="typeSelector">
+      <button class="type-btn active" data-type="restaurant"><i class="fas fa-utensils"></i>Restaurant</button>
+      <button class="type-btn" data-type="jewellery"><i class="fas fa-gem"></i>Jewellery</button>
+      <button class="type-btn" data-type="hotel"><i class="fas fa-hotel"></i>Hotel</button>
+      <button class="type-btn" data-type="gym"><i class="fas fa-dumbbell"></i>Gym</button>
+      <button class="type-btn" data-type="clinic"><i class="fas fa-user-md"></i>Clinic</button>
+      <button class="type-btn" data-type="salon"><i class="fas fa-cut"></i>Salon</button>
+      <button class="type-btn" data-type="shop"><i class="fas fa-shopping-bag"></i>Shop</button>
+      <button class="type-btn" data-type="realestate"><i class="fas fa-building"></i>Real Estate</button>
+      <button class="type-btn" data-type="coaching"><i class="fas fa-graduation-cap"></i>Coaching</button>
+      <button class="type-btn" data-type="catering"><i class="fas fa-utensils"></i>Catering</button>
+      <button class="type-btn" data-type="autoshop"><i class="fas fa-car"></i>Auto Repair</button>
+      <button class="type-btn" data-type="plumber"><i class="fas fa-wrench"></i>Plumber</button>
+      <button class="type-btn" data-type="generic"><i class="fas fa-briefcase"></i>Other</button>
+    </div>
+  </div>
+
+  <!-- BUSINESS INFO -->
+  <div class="card">
+    <h3><i class="fas fa-store"></i> ২. ব্যবসার তথ্য</h3>
+    <div class="grid2">
+      <div><label>Business Name *</label><input id="name" placeholder="e.g. Sharma Jewellers"></div>
+      <div><label>Tagline</label><input id="tagline" placeholder="e.g. Fine Jewellery Since 1990"></div>
+      <div><label>Phone (with +91) *</label><input id="phone" value="+91 76019 55153"></div>
+      <div><label>Email</label><input id="email" value="info@business.com"></div>
+      <div><label>Hours</label><input id="hours" value="Mon - Sun: 9:00 AM - 9:00 PM"></div>
+      <div><label>Google Map Query</label><input id="mapQuery" placeholder="Panskura West Bengal"></div>
+    </div>
+    <label>Address</label>
+    <input id="address" placeholder="123 Main Street, City, State PIN">
+
+    <label>About (short description)</label>
+    <textarea id="about" style="min-height:70px;font-family:inherit" placeholder="Welcome to our business. We provide high-quality services..."></textarea>
+
+    <div class="grid2">
+      <div><label>Zomato URL (restaurant/catering only)</label><input id="zomato" placeholder="https://zomato.com/..."></div>
+      <div><label>Swiggy URL (restaurant/catering only)</label><input id="swiggy" placeholder="https://swiggy.com/..."></div>
+    </div>
+    
+    <label>Custom Hero Image URL (optional)</label>
+    <input id="heroImg" placeholder="https://images.unsplash.com/...">
+  </div>
+
+  <!-- ITEMS / MENU -->
+  <div class="card">
+    <h3><i class="fas fa-list"></i> ৩. <span id="itemsLabel">Menu / Services / Products</span></h3>
+    <div class="help">
+      <strong>Format:</strong> <code>Name|Price|type|category|description</code><br>
+      <strong>Type:</strong> <code>veg</code> বা <code>non-veg</code> (রেস্টুরেন্টের জন্য), অন্য ব্যবসায় <code>veg</code> রাখুন<br>
+      <strong>Category:</strong> soups, starters, main-course, rings, necklaces, rooms, services — যেকোনো নাম<br>
+      <strong>Description:</strong> ৫ম কলামে সংক্ষিপ্ত বিবরণ (optional)
+    </div>
+    <label style="margin-top:15px;">Items (প্রতি লাইনে একটি)</label>
+    <textarea id="items" placeholder="Paneer Butter Masala|410|veg|main-course|Rich creamy tomato gravy
+Chicken Biryani|350|non-veg|biryani|Aromatic rice with chicken"></textarea>
+    <p class="stat">Total: <strong id="itemCount">0</strong> | Veg: <strong id="vegCount">0</strong> | Non-Veg: <strong id="nonvegCount">0</strong></p>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="actions">
+    <button class="btn" onclick="generate()"><i class="fas fa-link"></i> Generate Link</button>
+    <button class="btn btn-sec" onclick="loadSample()"><i class="fas fa-file-alt"></i> Load Sample</button>
+    <button class="btn btn-red" onclick="clearAll()"><i class="fas fa-trash"></i> Clear</button>
+  </div>
+
+  <!-- OUTPUT -->
+  <div class="output" id="output">
+    <h3><i class="fas fa-check-circle"></i> Demo Link Ready!</h3>
+    <div class="link-box"><a id="linkText" href="#" target="_blank"></a></div>
+    <div class="verify-box" id="verifyBox"></div>
+    <div class="actions">
+      <button class="btn btn-green" onclick="copyLink()"><i class="fas fa-copy"></i> Copy</button>
+      <button class="btn" onclick="openPreview()"><i class="fas fa-eye"></i> Preview</button>
+      <button class="btn btn-sec" onclick="openShortener()"><i class="fas fa-compress"></i> Bitly</button>
+    </div>
+    <p class="stat" style="margin-top:12px;">Link length: <strong id="linkLength">0</strong> characters</p>
+  </div>
+
+  <div class="help" style="margin-top:25px;">
+    <strong>📌 প্রথমবার সেটআপ:</strong><br>
+    ১. <code>index.html</code> + <code>generator.html</code> একই ফোল্ডারে রাখুন<br>
+    ২. GitHub-এ আপলোড করুন<br>
+    ৩. Settings → Pages → main branch → Save
+  </div>
+
+</div>
+
+<script>
+function getBaseUrl() {
+  const clean = location.href.split('?')[0].split('#')[0];
+  return clean.replace(/[^\/]*$/, '') + 'index.html';
+}
+const BASE_URL = getBaseUrl();
+document.getElementById('baseUrlDisplay').textContent = BASE_URL;
+
+let currentType = 'restaurant';
+
+// Type-specific labels
+const TYPE_LABELS = {
+  restaurant: 'Menu', jewellery: 'Collection', hotel: 'Rooms', gym: 'Classes',
+  clinic: 'Services', salon: 'Services', shop: 'Products', realestate: 'Properties',
+  coaching: 'Courses', catering: 'Packages', autoshop: 'Services',
+  plumber: 'Services', generic: 'Services'
+};
+
+document.getElementById('typeSelector').onclick = e => {
+  const btn = e.target.closest('.type-btn');
+  if (!btn) return;
+  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentType = btn.dataset.type;
+  document.getElementById('itemsLabel').textContent = TYPE_LABELS[currentType] || 'Items';
+};
+
+// Encode/Decode
+function encodeData(d) {
+  try {
+    const j = JSON.stringify(d);
+    const u = unescape(encodeURIComponent(j));
+    const b = btoa(u);
+    return b.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  } catch(e) { return null; }
+}
+function decodeData(e) {
+  try {
+    let b = e.replace(/-/g, '+').replace(/_/g, '/');
+    while (b.length % 4) b += '=';
+    return JSON.parse(decodeURIComponent(escape(atob(b))));
+  } catch(e) { return null; }
+}
+
+function parseItems(t) {
+  return t.split('\n').filter(l => l.trim()).map(line => {
+    const p = line.split('|').map(x => x.trim());
+    return {
+      name: p[0] || 'Item',
+      price: p[1] || '0',
+      type: (p[2] || 'veg').toLowerCase() === 'non-veg' ? 'non-veg' : 'veg',
+      category: p[3] || 'general',
+      desc: p[4] || ''
+    };
+  });
+}
+
+function showAlert(m, t) {
+  const el = document.getElementById('alert');
+  el.className = 'alert ' + t;
+  el.innerHTML = `<i class="fas fa-${t === 'err' ? 'exclamation-triangle' : 'check-circle'}"></i> ${m}`;
+  if (t === 'ok') setTimeout(() => el.className = 'alert', 4000);
+}
+
+function generate() {
+  const name = document.getElementById('name').value.trim();
+  if (!name) { showAlert('ব্যবসার নাম দিন', 'err'); return; }
+  
+  const data = {
+    type: currentType,
+    name,
+    tagline: document.getElementById('tagline').value.trim(),
+    phone: document.getElementById('phone').value.trim() || '+91 76019 55153',
+    email: document.getElementById('email').value.trim(),
+    hours: document.getElementById('hours').value.trim(),
+    address: document.getElementById('address').value.trim(),
+    about: document.getElementById('about').value.trim() || `Welcome to ${name}.`,
+    mapQuery: document.getElementById('mapQuery').value.trim(),
+    zomato: document.getElementById('zomato').value.trim(),
+    swiggy: document.getElementById('swiggy').value.trim(),
+    heroImg: document.getElementById('heroImg').value.trim(),
+    items: parseItems(document.getElementById('items').value),
+    gallery: []
+  };
+  
+  const enc = encodeData(data);
+  if (!enc) { showAlert('Encoding failed', 'err'); return; }
+  
+  const verify = decodeData(enc);
+  if (!verify || verify.name !== name) { showAlert('Verification failed', 'err'); return; }
+  
+  const link = BASE_URL + '?d=' + enc;
+  document.getElementById('linkText').textContent = link;
+  document.getElementById('linkText').href = link;
+  document.getElementById('linkLength').textContent = link.length;
+  
+  const vb = document.getElementById('verifyBox');
+  vb.style.display = 'block';
+  vb.innerHTML = `✅ <strong>VERIFIED</strong><br>
+    Type: ${verify.type}<br>Name: ${verify.name}<br>
+    Menu items: ${verify.items.length}<br>Phone: ${verify.phone}`;
+  
+  document.getElementById('output').style.display = 'block';
+  document.getElementById('output').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  showAlert('✅ লিংক তৈরি হয়েছে!', 'ok');
+}
+
+function copyLink() {
+  const link = document.getElementById('linkText').href;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(link).then(() => showAlert('✅ কপি হয়েছে!', 'ok'))
+      .catch(() => fallbackCopy(link));
+  } else fallbackCopy(link);
+}
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); showAlert('✅ কপি হয়েছে!', 'ok'); } catch(e) {}
+  document.body.removeChild(ta);
+}
+
+function openPreview() { window.open(document.getElementById('linkText').href, '_blank'); }
+function openShortener() {
+  navigator.clipboard.writeText(document.getElementById('linkText').href);
+  window.open('https://bitly.com/', '_blank');
+}
+
+function loadSample() {
+  const samples = {
+    restaurant: {
+      name: 'Second Wife Restaurant', tagline: 'Family Garden Restaurant',
+      about: 'Authentic Bengali, Indian & Chinese cuisine in a warm garden setting.',
+      items: `Chicken Mushroom Soup|230|non-veg|soups|Creamy chicken soup
+Veg Hot N Sour Soup|210|veg|soups|Spicy tangy soup
+Egg Chow Mein|270|non-veg|chinese|Stir-fried noodles
+Chicken Manchurian|360|non-veg|chinese|Juicy chicken balls
+Chicken Biryani|350|non-veg|biryani|Aromatic rice with chicken
+Veg Biryani|300|veg|biryani|Fragrant veg rice
+Paneer Butter Masala|410|veg|main-course|Rich creamy gravy
+Butter Naan|60|veg|breads|Soft tandoori bread
+Gulab Jamun|120|veg|desserts|Sweet milk dumplings`
+    },
+    jewellery: {
+      name: 'Sharma Jewellers', tagline: 'Fine Jewellery Since 1990',
+      about: 'Exquisite gold, diamond and pearl jewellery crafted with love.',
+      items: `Gold Necklace|45000|veg|necklaces|22K gold with traditional design
+Diamond Ring|78000|veg|rings|Certified solitaire diamond
+Pearl Earrings|22000|veg|earrings|South sea pearls
+Gold Bangles|35000|veg|bangles|Pair of 22K gold bangles
+Silver Anklet|3500|veg|anklets|Pure silver with bells
+Ruby Pendant|28000|veg|pendants|Natural ruby with gold`
+    },
+    hotel: {
+      name: 'Grand Palace Hotel', tagline: 'Luxury & Comfort',
+      about: 'A 5-star experience in the heart of the city with premium amenities.',
+      items: `Standard Room|2500|veg|rooms|Cozy room with basic amenities
+Deluxe Room|4500|veg|rooms|Spacious with city view
+Executive Suite|7500|veg|suites|Luxury suite with living room
+Presidential Suite|15000|veg|suites|Ultimate luxury experience`
+    },
+    gym: {
+      name: 'PowerFit Gym', tagline: 'Transform Your Body',
+      about: 'State-of-the-art equipment with certified trainers.',
+      items: `Monthly Membership|999|veg|plans|Basic gym access
+Quarterly Plan|2499|veg|plans|3 months with locker
+Half Yearly|4499|veg|plans|6 months with 2 PT sessions
+Annual Premium|7999|veg|plans|Full year with all access`
+    },
+    clinic: {
+      name: 'Health First Clinic', tagline: 'Your Health, Our Priority',
+      about: 'Multi-specialty clinic with experienced doctors.',
+      items: `General Consultation|500|veg|services|Basic checkup
+Specialist Consultation|800|veg|services|Expert doctor
+Blood Test|300|veg|services|Complete blood work
+X-Ray|600|veg|services|Digital X-Ray
+ECG|400|veg|services|Heart test`
+    },
+    salon: {
+      name: 'Glamour Studio', tagline: 'Beauty & Style',
+      about: 'Premium salon services by expert stylists.',
+      items: `Haircut|300|veg|hair|Stylish haircut
+Hair Color|1500|veg|hair|Professional coloring
+Facial|800|veg|skin|Glowing facial
+Manicure|400|veg|nails|Nail care
+Pedicure|500|veg|nails|Foot care
+Bridal Makeup|8000|veg|bridal|Complete bridal package`
+    },
+    shop: {
+      name: 'Fashion Hub', tagline: 'Trendy Collections',
+      about: 'Latest fashion for men and women at affordable prices.',
+      items: `Men T-Shirt|499|veg|men|Cotton casual T-shirt
+Women Kurti|899|veg|women|Designer kurti
+Jeans|1299|veg|men|Slim fit jeans
+Saree|2499|veg|women|Designer saree
+Shoes|1599|veg|footwear|Casual shoes`
+    },
+    realestate: {
+      name: 'Prime Properties', tagline: 'Find Your Dream Home',
+      about: 'Trusted real estate solutions since 2005.',
+      items: `2 BHK Apartment|4500000|veg|apartments|Mumbai location
+3 BHK Apartment|6500000|veg|apartments|Pune location
+Villa with Garden|12000000|veg|villas|Premium villa
+Commercial Shop|3500000|veg|commercial|Main road
+Office Space|8500000|veg|commercial|Prime location`
+    },
+    coaching: {
+      name: 'Bright Academy', tagline: 'Shaping Future',
+      about: 'Expert coaching for competitive exams.',
+      items: `JEE Preparation|45000|veg|jee|Complete course
+NEET Preparation|50000|veg|neet|Full program
+Class 10 Board|25000|veg|boards|Foundation
+Class 12 Science|30000|veg|boards|PCM/PCB`
+    },
+    catering: {
+      name: 'Royal Caterers', tagline: 'Taste of Royalty',
+      about: 'Premium catering for all occasions.',
+      items: `Silver Package|500|veg|catering|5 items per plate
+Gold Package|800|veg|catering|8 items premium
+Platinum Package|1200|veg|catering|12 items luxury
+Wedding Special|1500|veg|catering|Complete wedding menu`
+    },
+    autoshop: {
+      name: 'Auto Care Center', tagline: 'Expert Repairs',
+      about: 'Complete car service and repair.',
+      items: `General Service|2500|veg|service|Basic service
+Full Service|5500|veg|service|Complete service
+AC Repair|3000|veg|ac|AC repair work
+Wheel Alignment|800|veg|wheels|Alignment service
+Denting Painting|5000|veg|paint|Per panel`
+    },
+    plumber: {
+      name: 'QuickFix Plumbing', tagline: '24/7 Emergency Service',
+      about: 'Fast and reliable plumbing services.',
+      items: `Tap Repair|200|veg|repair|Fix leaking tap
+Pipe Installation|500|veg|installation|New pipe fitting
+Toilet Repair|400|veg|repair|Fix toilet issues
+Water Tank Cleaning|800|veg|cleaning|Full cleaning
+Emergency Call|1000|veg|emergency|24/7 service`
+    },
+    generic: {
+      name: 'Business Services', tagline: 'Professional Solutions',
+      about: 'Quality services for your needs.',
+      items: `Service 1|999|veg|general|Professional service
+Service 2|1499|veg|general|Premium service
+Service 3|2499|veg|general|Complete solution`
+    }
+  };
+  
+  const s = samples[currentType] || samples.generic;
+  document.getElementById('name').value = s.name;
+  document.getElementById('tagline').value = s.tagline;
+  document.getElementById('about').value = s.about;
+  document.getElementById('items').value = s.items;
+  updateCount();
+  showAlert('✅ Sample লোড হয়েছে!', 'ok');
+}
+
+function clearAll() {
+  if (!confirm('সব ডেটা মুছবেন?')) return;
+  ['name','tagline','email','address','mapQuery','about','zomato','swiggy','heroImg','items'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('output').style.display = 'none';
+  updateCount();
+}
+
+function updateCount() {
+  const items = parseItems(document.getElementById('items').value);
+  document.getElementById('itemCount').textContent = items.length;
+  document.getElementById('vegCount').textContent = items.filter(i => i.type === 'veg').length;
+  document.getElementById('nonvegCount').textContent = items.filter(i => i.type === 'non-veg').length;
+}
+document.getElementById('items').addEventListener('input', updateCount);
+updateCount();
+
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    e.preventDefault();
+    generate();
+  }
+});
+</script>
+</body>
+</html>
